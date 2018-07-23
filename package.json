@@ -1,14 +1,26 @@
 {
-  "name": "DynamicRoutingModule",
+  "name": "express-dynamic-router-creator",
   "version": "1.0.0",
-  "description": "",
+  "description": "With this module you will be able to write dynamic created routing with express.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node example/server.js",
+    "dev": "nodemon example/server.js"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/enteresanlikk/express-dynamic-router-creator"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "fs",
+    "routing",
+    "dynamic",
+    "dynamic routing",
+    "dynamic router creator"
+  ],
+  "author": "Bilal Demir",
   "license": "ISC",
   "devDependencies": {
     "express": "^4.16.3",

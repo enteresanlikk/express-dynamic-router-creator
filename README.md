@@ -18,12 +18,14 @@
     ...
     
     //Import
+    const express=require('express');
+    const app=express();
     const DynamicRoute=require("./module/index");
     
     ...
     
     DynamicRoute.Config({
-        app:express(), //Express
+        app:app, //Express
         folders:{
             routers:'routers', //Routers folder
             middlewares:'middlewares', //Middlewares folder
