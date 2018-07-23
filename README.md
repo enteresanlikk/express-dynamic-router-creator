@@ -46,9 +46,8 @@
 ### Folder Structure (Example)
         1. controllers
         2. middlewares
-        3. module
-        4. routers
-        5. server.js
+        3. routers
+        4. server.js
         
 ### Code Example
    main.js ([example/routers/main.js](example/routers/main.js))
