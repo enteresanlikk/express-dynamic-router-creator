@@ -1,5 +1,7 @@
 //Variables
 const fs=require('fs');
+const express=require('express');
+const app=express();
 
 let Routes=[];
 
@@ -17,7 +19,7 @@ let OldGroupUrl=[],
     NewGroupUrl='',
     Dir='';
 
-let newApp, newDir=process.cwd(), newMiddlewares='', newControllers='', newLog=false;
+let newDir=process.cwd(), newMiddlewares='', newControllers='', newLog=false;
 
 class Index {
     constructor(){
@@ -42,10 +44,10 @@ class Index {
         this.List(Routes.routes);
     }
 
-    setVariables({app,dir,mainFile,folders:{routers,middlewares,controllers},log}, Routes){
+    setVariables({dir,mainFile,folders:{routers,middlewares,controllers},log}, Routes){
         let {rootUrl,version,routes,middleware} = Routes;
 
-        newRootMiddleware=middleware; //Burada kaldı Root middleware lar dahil edilecek
+        newRootMiddleware=middleware;
 
         newRootUrl=rootUrl ? '/'+rootUrl : '';
 
@@ -58,7 +60,6 @@ class Index {
         newRoutes=routes ? routes : [];
         ApiUrl=newRootUrl+newVersion;
 
-        newApp=app;
         newMiddlewares=middlewares;
         newControllers=controllers;
         newLog=log;
@@ -134,7 +135,7 @@ class Index {
 
                         if(AllRouteMiddlewares){
 
-                            newApp[method](`${FullUrl}`
+                            app[method](`${FullUrl}`
                                 ,(typeof AllRouteMiddlewares==='object')
                                     ?  AllRouteMiddlewares.map(mid=>{
                                         return require(MiddlewareFolder+mid)
@@ -142,7 +143,7 @@ class Index {
                                     : require(MiddlewareFolder+AllRouteMiddlewares)
                                 ,require(`${FullControllerPath}`)[`${action}`]);
                         }else{
-                            newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                            app[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
                         }
 
 

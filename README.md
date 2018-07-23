@@ -25,7 +25,6 @@
     ...
     
     DynamicRoute.Config({
-        app:app, //Express
         folders:{
             routers:'routers', //Routers folder
             middlewares:'middlewares', //Middlewares folder
