@@ -4,6 +4,7 @@ const app=express();
 const DynamicRoute=require("express-dynamic-router-creator");
 
 DynamicRoute.Config({
+    app:app,
     folders:{
         routers:'routers',
         middlewares:'middlewares',
