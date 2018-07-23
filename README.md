@@ -13,18 +13,21 @@
 
 > ***Note***: **In order to use this library, you need to include the express and fs libraries.**
 
-## **Configuration**
+## **Install andConfiguration**
+
+   `npm install --save express-dynamic-router-creator`
 
     ...
     
     //Import
     const express=require('express');
     const app=express();
-    const DynamicRoute=require("./module/index");
+    const DynamicRoute=require("express-dynamic-router-creator");
     
     ...
     
     DynamicRoute.Config({
+        app:app,
         folders:{
             routers:'routers', //Routers folder
             middlewares:'middlewares', //Middlewares folder
@@ -48,7 +51,7 @@
         5. server.js
         
 ### Code Example
-   main.js (example/routers/main.js)
+   main.js ([example/routers/main.js](example/routers/main.js))
    
     ...
     
@@ -78,7 +81,7 @@
         ]
     };
     
-   example.js (example/routers/example.js)
+   example.js ([example/routers/example.js](example/routers/example.js))
    
     module.exports=[
         {
