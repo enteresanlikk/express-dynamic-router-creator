@@ -1,7 +1,5 @@
 //Variables
 const fs=require('fs');
-const express=require('express');
-const app=express();
 
 let Routes=[];
 
@@ -19,7 +17,7 @@ let OldGroupUrl=[],
     NewGroupUrl='',
     Dir='';
 
-let newDir=process.cwd(), newMiddlewares='', newControllers='', newLog=false;
+let newApp,newDir=process.cwd(), newMiddlewares='', newControllers='', newLog=false;
 
 class Index {
     constructor(){
@@ -44,8 +42,10 @@ class Index {
         this.List(Routes.routes);
     }
 
-    setVariables({dir,mainFile,folders:{routers,middlewares,controllers},log}, Routes){
+    setVariables({app,folders:{routers,middlewares,controllers},log}, Routes){
         let {rootUrl,version,routes,middleware} = Routes;
+
+        newApp=app;
 
         newRootMiddleware=middleware;
 
@@ -136,7 +136,7 @@ class Index {
 
                         if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){
 
-                            app[method](`${FullUrl}`
+                            newApp[method](`${FullUrl}`
                                 ,(typeof AllRouteMiddlewares==='object')
                                     ?  AllRouteMiddlewares.map(mid=>{
                                         return require(MiddlewareFolder+mid)
@@ -144,7 +144,7 @@ class Index {
                                     : require(MiddlewareFolder+AllRouteMiddlewares)
                                 ,require(`${FullControllerPath}`)[`${action}`]);
                         }else{
-                            app[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                            newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
                         }
 
 

@@ -3,7 +3,7 @@ const example=require('./example');
 module.exports={
     rootUrl:'api',
     version:{
-        text:'v',
+        text:'denemeversiyon',
         number:1
     },
     middleware:'SetHeader',
