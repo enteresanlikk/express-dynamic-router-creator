@@ -13,7 +13,7 @@
 
 > ***Note***: **In order to use this library, you need to include the express and fs libraries.**
 
-## **Install andConfiguration**
+## **Install and Configuration**
 
    `npm install --save express-dynamic-router-creator`
 
