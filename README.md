@@ -30,7 +30,7 @@
         app:app,
         folders:{
             routers:'routers', //Routers folder
-            middlewares:'middlewares', //Middlewares folder
+            middlewares:'middlewares', //Middlewares folder - Optional
             controllers:'controllers' //Controllers folder
         },
         mainFile:'main.js', //It is your main file in the Routers folder.
@@ -59,19 +59,19 @@
     ...
     
     module.exports={
-        rootUrl:'api',
-        version:{
-            text:'v',
-            number:1
+        rootUrl:'api', //Optional
+        version:{ //Optional
+            text:'v', //Optional
+            number:1 //Optional
         },
-        middleware:'SetHeader', // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the whole project.
+        middleware:'SetHeader', // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
         routes:[
             {
                 method:'GET',
                 url:'home',
                 controller:'IndexController',
                 action:'Index',
-                middleware:['TestMid1','TestMid2'] // or 'SetHeader' -> The middleware(s) will affect the route.
+                middleware:['TestMid1','TestMid2'] // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
             },
             {
                 groupUrl:'example',
@@ -88,7 +88,7 @@
             url:'home',
             controller:'IndexController',
             action:'Index',
-            middleware:'TestMid1' // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the route.
+            middleware:'TestMid1' // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the route. - Optional
         }
     ];
     
