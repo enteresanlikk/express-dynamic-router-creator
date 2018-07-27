@@ -17,7 +17,7 @@ let OldGroupUrl=[],
     NewGroupUrl='',
     Dir='';
 
-let newApp,newDir=process.cwd(), newMiddlewares='', newControllers='', newLog=false;
+let newApp, newMiddlewares='', newControllers='', newLog=false;
 
 
 
@@ -29,7 +29,7 @@ ImportFile=(options)=>{
         }
     } = options;
 
-    Routes=require(newDir+'\/'+routers+'\/'+mainFile);
+    Routes=require(routers+'\/'+mainFile);
 
     setVariables(options,Routes);
     List(Routes.routes);
@@ -97,8 +97,8 @@ SetMiddlewares=(middleware)=>{
 List=(routeList)=>{
 
    
-    const MiddlewareFolder=newMiddlewares && newMiddlewares!='' ? newDir+'/'+newMiddlewares+'/' : '';
-    const ControllerFolder=newDir+'/'+newControllers+'/';
+    const MiddlewareFolder=newMiddlewares && newMiddlewares!='' ? newMiddlewares+'/' : '';
+    const ControllerFolder=newControllers+'/';
 
     routeList.map(route=>{
         let keys=Object.keys(route);

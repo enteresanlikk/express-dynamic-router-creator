@@ -29,9 +29,9 @@
     DynamicRoute.Config({
         app:app,
         folders:{
-            routers:'routers', //Routers folder
-            middlewares:'middlewares', //Middlewares folder - Optional
-            controllers:'controllers' //Controllers folder
+            routers:path.join(__dirname,'routers'), //Routers folder
+            middlewares:path.join(__dirname,'middlewares'), //Middlewares folder - Optional
+            controllers:path.join(__dirname,'controllers') //Controllers folder
         },
         mainFile:'main.js', //It is your main file in the Routers folder.
         log:true //If the log is open it will tell you about the URLs.
