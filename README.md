@@ -34,10 +34,12 @@
             middlewares:path.join(__dirname,'middlewares'), //Middlewares folder - Optional
             controllers:path.join(__dirname,'controllers') //Controllers folder
         },
-        mainFile:'main.js', //It is your main file in the Routers folder.
+        mainFile:['main.js','root.js','test.js'], //OR 'main.js' -> It is your main file in the Routers folder.
         log:true //If the log is open it will tell you about the URLs.
     });
     
+> **Info:** The files or files you define in mainFile work independently of each other. For example, if you have a router for the front of a route file, then the other file contains the necessary routing for the background. When defining a file, you need to enter the file name into '. If you want to define more than one file, you must define your files in an array.
+
 > **Note:** The output of the open log feature.
 > 
 > ![Log Image](log.png)

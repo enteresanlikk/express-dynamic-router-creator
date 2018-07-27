@@ -1,5 +1,6 @@
 //Variables
 const fs=require('fs');
+const colors = require('colors');
 
 let Routes=[];
 
@@ -8,6 +9,7 @@ let newVersionText='';
 let newVersionNumber;
 let newVersion='';
 let newRootMiddleware='';
+let newRouteFile='';
 
 let newRoutes =[];
 
@@ -19,7 +21,7 @@ let OldGroupUrl=[],
 
 let newApp, newMiddlewares='', newControllers='', newLog=false;
 
-
+let thisIsLogin=false;
 
 ImportFile=(options)=>{
     const {
@@ -29,13 +31,25 @@ ImportFile=(options)=>{
         }
     } = options;
 
-    Routes=require(routers+'\/'+mainFile);
-
-    setVariables(options,Routes);
-    List(Routes.routes);
+    if(typeof mainFile==='object'){
+        mainFile.map(file=>{
+            Routes=require(routers+'\/'+file);
+            setVariables(options,Routes,file);
+            List(Routes.routes);
+            thisIsLogin=false;
+        });
+    }else{
+        Routes=require(routers+'\/'+mainFile);
+        setVariables(options,Routes,mainFile);
+        thisIsLogin=true;
+        List(Routes.routes);
+    }
 }
 
-setVariables=({app,folders:{routers,middlewares,controllers},log}, Routes)=>{
+setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
+    newVersionText='';
+    newVersionNumber='';
+    newVersion='';
     let {rootUrl,version,routes,middleware} = Routes;
 
     newApp=app;
@@ -56,6 +70,8 @@ setVariables=({app,folders:{routers,middlewares,controllers},log}, Routes)=>{
     newMiddlewares=middlewares;
     newControllers=controllers;
     newLog=log;
+
+    newRouteFile=RouteFile;
 }
 
 SetMiddlewares=(middleware)=>{
@@ -124,7 +140,13 @@ List=(routeList)=>{
                     let AllRouteMiddlewares=MiddlewareFolder!='' ? SetMiddlewares(middleware) : [];
 
                     if(newLog){
-                        console.log(`[${method}] ${FullUrl} ${controller}@${action} ${(AllRouteMiddlewares && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : '')}`);
+                        if(!thisIsLogin){
+                            console.log(`\n${colors.magenta.underline(newRouteFile)}`);
+                            thisIsLogin=true;
+                        }else{
+                            thisIsLogin=true;
+                        }
+                        console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.yellow(controller)}@${colors.yellow(action)} ${colors.cyan((AllRouteMiddlewares.length>0 && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : ''))}`);
                     }
 
                     if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){

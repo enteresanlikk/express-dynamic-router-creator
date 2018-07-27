@@ -11,7 +11,7 @@ DynamicRoute.Config({
         middlewares:path.join(__dirname,'middlewares'),
         controllers:path.join(__dirname,'controllers')
     },
-    mainFile:'main.js',
+    mainFile:['main.js','root.js','test.js'], //OR 'main.js'
     log:true
 });
 
