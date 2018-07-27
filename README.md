@@ -22,7 +22,8 @@
     //Import
     const express=require('express');
     const app=express();
-    const DynamicRoute=require("express-dynamic-router-creator");
+    const path=require('path');
+    const DynamicRoute=require('express-dynamic-router-creator');
     
     ...
     
