@@ -60,13 +60,30 @@
     const example=require('./example');
     
     ...
+
+    const WhiteList=YOUR_WHITE_LIST;
+    var corsOptions = {
+        origin: function (origin, callback) {
+            if (WhiteList.indexOf(origin) !== -1 || !origin) {
+                callback(null, true)
+            } else {
+                callback({status:403,data:'No Access!'});
+            }
+        },
+        optionsSuccessStatus: 200,
+        methods:'OPTIONS',
+        credentials:true
+    }
     
+    ...
+
     module.exports={
         rootUrl:'api', //Optional
         version:{ //Optional
             text:'v', //Optional
             number:1 //Optional
         },
+        optionsMiddleware:cors(corsOptions), // or ['TestMid1','TestMid2',...] or 'TestMid1' -> You can assign it as an intermediate layer in this section. - Optional
         middleware:'SetHeader', // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
         routes:[
             {
@@ -78,6 +95,7 @@
             },
             {
                 groupUrl:'example',
+                middleware:['TestMid1','TestMid2'] // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
                 groupRoutes:example
             }
         ]

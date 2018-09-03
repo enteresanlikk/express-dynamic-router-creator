@@ -50,7 +50,7 @@ setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
     newVersionText='';
     newVersionNumber='';
     newVersion='';
-    let {rootUrl,version,routes,middleware} = Routes;
+    let {rootUrl, version, routes, middleware, optionsMiddleware} = Routes;
 
     newApp=app;
 
@@ -71,11 +71,39 @@ setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
     newControllers=controllers;
     newLog=log;
 
+    //Set Opitons Middleware
+    if(optionsMiddleware){
+        const optionsMiddlewareType=typeof optionsMiddleware;
+        switch(optionsMiddlewareType){
+            case 'string':
+            case 'object':
+                const MiddlewareFolder=newMiddlewares && newMiddlewares!='' ? newMiddlewares+'/' : '';
+                if(MiddlewareFolder!=''){
+                    newApp.use(`*`
+                                ,(typeof optionsMiddleware==='object')
+                                    ?  [optionsMiddleware.map(mid=>{
+                                        if(typeof mid === 'function'){
+                                            return mid
+                                        }else{
+                                            return require(MiddlewareFolder+mid)
+                                        }
+                                    })]
+                                    : require(MiddlewareFolder+optionsMiddleware));
+                }
+            break;
+            case 'function':
+                newApp.use(`*`, optionsMiddleware);
+            break;
+        }
+    }
+    //Set Opitons Middleware
+
     newRouteFile=RouteFile;
 }
 
 SetMiddlewares=(middleware)=>{
     let AllRouteMiddlewares=[];
+    
     if(newRootMiddleware || middleware){
         if(newRootMiddleware){
             newRootMiddleware=newRootMiddleware.toString();
@@ -84,15 +112,18 @@ SetMiddlewares=(middleware)=>{
         }
 
         if(middleware){
-            middleware=middleware.toString();
+            if(typeof middleware ==='function'){
+                middleware=middleware;
+            }else{
+                middleware=middleware.toString();
+            }
         }else{
             middleware='';
         }
     }
 
-
-
     if(newRootMiddleware &&  middleware){
+        
         let test=(newRootMiddleware+','+middleware).split(',');
         AllRouteMiddlewares=test;
     }else if(newRootMiddleware){
@@ -109,6 +140,8 @@ SetMiddlewares=(middleware)=>{
 
     return AllRouteMiddlewares;
 }
+
+let groupMiddleware;
 
 List=(routeList)=>{
 
@@ -137,7 +170,23 @@ List=(routeList)=>{
             if(fs.existsSync(FullControllerPath+'.js')){
                 if(typeof require(`${FullControllerPath}`)[`${action}`] !=='undefined'){
 
-                    let AllRouteMiddlewares=MiddlewareFolder!='' ? SetMiddlewares(middleware) : [];
+                    //Middleware List(s)
+                    let AllRouteMiddlewares=[]
+                    let groupMiddArray=[];
+                    if(MiddlewareFolder!=''){
+                        AllRouteMiddlewares=SetMiddlewares(middleware);
+                        if(groupMiddleware!=''){
+                            if(typeof groupMiddleware === 'string'){
+                                AllRouteMiddlewares.push(groupMiddleware);
+                            }else if(typeof groupMiddleware === 'object'){
+                                for(let i=0;i<groupMiddleware.length;i++){
+                                    groupMiddArray.push(groupMiddleware[i]);
+                                }                            
+                                AllRouteMiddlewares=SetMiddlewares(groupMiddArray);
+                            }
+                        }
+                    }
+                    //Middleware List(s)
 
                     if(newLog){
                         if(!thisIsLogin){
@@ -154,7 +203,11 @@ List=(routeList)=>{
                         newApp[method](`${FullUrl}`
                             ,(typeof AllRouteMiddlewares==='object')
                                 ?  AllRouteMiddlewares.map(mid=>{
-                                    return require(MiddlewareFolder+mid)
+                                    if(typeof mid === 'function'){
+                                        return mid
+                                    }else{
+                                        return require(MiddlewareFolder+mid)
+                                    }
                                 })
                                 : require(MiddlewareFolder+AllRouteMiddlewares)
                             ,require(`${FullControllerPath}`)[`${action}`]);
@@ -172,8 +225,12 @@ List=(routeList)=>{
 
         }else{
             OldGroupUrl.push(route.groupUrl);
+            if(route.middleware){
+                groupMiddleware=route.middleware;
+            }
             List(route.groupRoutes,Dir);
             OldGroupUrl=[];
+            groupMiddleware='';
         }
     });
 }

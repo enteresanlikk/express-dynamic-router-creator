@@ -16,6 +16,7 @@ module.exports={
         },
         {
             groupUrl:'example',
+            middleware:['TestMid1','TestMid2'],
             groupRoutes:example
         }
     ]
