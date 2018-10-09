@@ -70,29 +70,30 @@ setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
     newMiddlewares=middlewares;
     newControllers=controllers;
     newLog=log;
-
     //Set Opitons Middleware
-    if(optionsMiddleware){
+    if(optionsMiddleware && typeof optionsMiddleware !== 'undefined'){
         const optionsMiddlewareType=typeof optionsMiddleware;
         switch(optionsMiddlewareType){
             case 'string':
             case 'object':
                 const MiddlewareFolder=newMiddlewares && newMiddlewares!='' ? newMiddlewares+'/' : '';
                 if(MiddlewareFolder!=''){
-                    newApp.use(`*`
+                    newApp.use(`${ApiUrl}*`
                                 ,(typeof optionsMiddleware==='object')
-                                    ?  [optionsMiddleware.map(mid=>{
-                                        if(typeof mid === 'function'){
-                                            return mid
-                                        }else{
-                                            return require(MiddlewareFolder+mid)
+                                    ?  optionsMiddleware.map(mid=>{
+                                        if(typeof mid !== 'undefined'){
+                                            if(typeof mid === 'function'){
+                                                return mid
+                                            }else{
+                                                return require(MiddlewareFolder+mid)
+                                            }
                                         }
-                                    })]
+                                    })
                                     : require(MiddlewareFolder+optionsMiddleware));
                 }
             break;
             case 'function':
-                newApp.use(`*`, optionsMiddleware);
+                newApp.use(`${ApiUrl}*`, optionsMiddleware);
             break;
         }
     }
@@ -224,7 +225,9 @@ List=(routeList)=>{
             }
 
         }else{
-            OldGroupUrl.push(route.groupUrl);
+            if(route.groupUrl && route.groupUrl !== ''){
+                OldGroupUrl.push(route.groupUrl);
+            }
             if(route.middleware){
                 groupMiddleware=route.middleware;
             }

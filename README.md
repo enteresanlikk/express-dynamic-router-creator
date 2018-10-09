@@ -61,13 +61,13 @@
     
     ...
 
-    const WhiteList=YOUR_WHITE_LIST;
+    const WhiteList=YOUR_WHITE_LIST_ARRAY;
     var corsOptions = {
         origin: function (origin, callback) {
             if (WhiteList.indexOf(origin) !== -1 || !origin) {
                 callback(null, true)
             } else {
-                callback({status:403,data:'No Access!'});
+                callback({status:403,data:'You do not have permission!'});
             }
         },
         optionsSuccessStatus: 200,
@@ -83,7 +83,7 @@
             text:'v', //Optional
             number:1 //Optional
         },
-        optionsMiddleware:cors(corsOptions), // or ['TestMid1','TestMid2',...] or 'TestMid1' -> You can assign it as an intermediate layer in this section. - Optional
+        optionsMiddleware:cors(corsOptions), - Optional
         middleware:'SetHeader', // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
         routes:[
             {
@@ -91,11 +91,11 @@
                 url:'home',
                 controller:'IndexController',
                 action:'Index',
-                middleware:['TestMid1','TestMid2'] // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
+                middleware:['TestMid1','TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
             },
             {
                 groupUrl:'example',
-                middleware:['TestMid1','TestMid2'] // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
+                middleware:['TestMid1','TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
                 groupRoutes:example
             }
         ]
