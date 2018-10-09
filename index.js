@@ -182,11 +182,14 @@ List=(routeList)=>{
                             }else if(typeof groupMiddleware === 'object'){
                                 for(let i=0;i<groupMiddleware.length;i++){
                                     groupMiddArray.push(groupMiddleware[i]);
-                                }                            
+                                }
                                 AllRouteMiddlewares=SetMiddlewares(groupMiddArray);
                             }
                         }
                     }
+                    AllRouteMiddlewares=AllRouteMiddlewares.filter((a,b,c)=>{
+                        return c.indexOf(a)=== b;
+                    });
                     //Middleware List(s)
 
                     if(newLog){
