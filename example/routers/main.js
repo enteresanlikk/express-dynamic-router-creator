@@ -1,38 +1,42 @@
+const cors = require('cors');
+
 const example=require('./example');
 
-const WhiteList=YOUR_WHITE_LIST;
+const WhiteList = ['http://localhost:3030'];
 var corsOptions = {
     origin: function (origin, callback) {
-        if (WhiteList.indexOf(origin) !== -1 || !origin) {
+        if ( WhiteList.indexOf(origin) !== -1 || !origin ) {
             callback(null, true)
         } else {
-            callback({status:403,data:'No Access!'});
+            callback({
+                status:403,
+                data: 'No Access!'
+            });
         }
     },
     optionsSuccessStatus: 200,
-    methods:'OPTIONS',
-    credentials:true
+    credentials: true
 }
 
 module.exports={
-    rootUrl:'api',
-    version:{
-        text:'v',
-        number:1
+    rootUrl: 'api',
+    version: {
+        text: 'v',
+        number: 1
     },
-    optionsMiddleware:cors(corsOptions),
-    middleware:'SetHeader',
-    routes:[
+    optionsMiddleware: cors(corsOptions),
+    middleware: 'TestMid1',
+    routes: [
         {
-            method:'GET',
-            url:'home',
-            controller:'IndexController',
-            action:'Index'
+            method: 'GET',
+            url: 'home',
+            controller: 'IndexController',
+            action: 'Index'
         },
         {
-            groupUrl:'example',
-            middleware:['TestMid1','TestMid2'],
-            groupRoutes:example
+            groupUrl: 'example',
+            middleware: ['TestMid1', 'TestMid2'],
+            groupRoutes: example
         }
     ]
 };

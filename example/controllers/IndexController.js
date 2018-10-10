@@ -2,7 +2,9 @@
 
 class IndexController{
     Index(req,res){
-        res.send('index');
+        res.json({
+            data: 'Home@Index'
+        });
     }
 }
 

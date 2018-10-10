@@ -1,6 +1,6 @@
 //Variables
 const fs=require('fs');
-const colors = require('colors');
+const colors = require('./colors');
 
 let Routes=[];
 
@@ -194,37 +194,50 @@ List=(routeList)=>{
 
                     if(newLog){
                         if(!thisIsLogin){
-                            console.log(`\n${colors.magenta.underline(newRouteFile)}`);
+                            console.log(`\n${colors.magenta(colors.underline(newRouteFile))}`);
                             thisIsLogin=true;
                         }else{
                             thisIsLogin=true;
                         }
-                        console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.yellow(controller)}@${colors.yellow(action)} ${colors.cyan((AllRouteMiddlewares.length>0 && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : ''))}`);
                     }
 
-                    if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){
+                    switch(method){
+                        case 'get':
+                        case 'post':
+                        case 'put':
+                        case 'delete':
+                        case 'options':
+                            if(newLog){
+                                console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.yellow(controller)}@${colors.yellow(action)} ${colors.cyan((AllRouteMiddlewares.length>0 && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : ''))}`);
+                            }
+                            if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){
 
-                        newApp[method](`${FullUrl}`
-                            ,(typeof AllRouteMiddlewares==='object')
-                                ?  AllRouteMiddlewares.map(mid=>{
-                                    if(typeof mid === 'function'){
-                                        return mid
-                                    }else{
-                                        return require(MiddlewareFolder+mid)
-                                    }
-                                })
-                                : require(MiddlewareFolder+AllRouteMiddlewares)
-                            ,require(`${FullControllerPath}`)[`${action}`]);
-                    }else{
-                        newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                                newApp[method](`${FullUrl}`
+                                    ,(typeof AllRouteMiddlewares==='object')
+                                        ?  AllRouteMiddlewares.map(mid=>{
+                                            if(typeof mid === 'function'){
+                                                return mid
+                                            }else{
+                                                return require(MiddlewareFolder+mid)
+                                            }
+                                        })
+                                        : require(MiddlewareFolder+AllRouteMiddlewares)
+                                    ,require(`${FullControllerPath}`)[`${action}`]);
+                            }else{
+                                newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                            }
+                            break;
+                        default:
+                            console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.red(`Method Error! Only GET, POST, PUT, DELETE, OPTIONS`)}`);
+                        break;
                     }
 
 
                 }else{
-                    console.log(`[${method}]`,FullUrl,action,"Action Error in",controller);
+                    console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.red(`${action} Action Error in ${controller}`)}`);
                 }
             }else{
-                console.log(`[${method}]`,FullUrl," Controller Error");
+                console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.red(` Controller Error!`)}`);
             }
 
         }else{

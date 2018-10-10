@@ -1,20 +1,20 @@
-import example from './example';
+const example = require('./example');
 
 module.exports={
-    rootUrl:'api',
-    middleware:'SetHeader',
-    routes:[
+    rootUrl: 'api',
+    middleware: 'TestMid2',
+    routes: [
         {
-            groupUrl:'example',
-            middleware:'TestMid2',
-            groupRoutes:example
+            groupUrl: 'example',
+            middleware: 'TestMid2',
+            groupRoutes: example
         },
         {
-            method:'GET',
-            url:'',
-            controller:'IndexController',
-            action:'Index',
-            middleware:['TestMid1','TestMid2'] // or 'TestMid1'
+            method: 'GET',
+            url: '',
+            controller: 'IndexController',
+            action: 'Index',
+            middleware: ['TestMid1', 'TestMid2']
         }
     ]
 };

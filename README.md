@@ -56,12 +56,13 @@
    main.js ([example/routers/main.js](example/routers/main.js))
    
     ...
-    
-    const example=require('./example');
+
+    const cors = require('cors');
+    const example = require('./example');
     
     ...
 
-    const WhiteList=YOUR_WHITE_LIST_ARRAY;
+    const WhiteList = ['http://localhost:3030'];
     var corsOptions = {
         origin: function (origin, callback) {
             if (WhiteList.indexOf(origin) !== -1 || !origin) {

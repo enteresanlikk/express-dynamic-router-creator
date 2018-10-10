@@ -1,7 +1,9 @@
+'use strict';
+
 class TestMid2 {
     constructor(){
         return function handler(req, res, next) {
-            res.setHeader("TestMid2","TestMid2");
+            res.setHeader('TestMid2','TestMid2');
             next();
         };
     }

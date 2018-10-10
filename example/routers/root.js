@@ -1,10 +1,10 @@
 module.exports={
-    routes:[
+    routes: [
         {
-            method:'GET',
-            url:'root',
-            controller:'IndexController',
-            action:'Index'
+            method: 'GET',
+            url: 'root',
+            controller: 'IndexController',
+            action: 'Index'
         }
     ]
 };
