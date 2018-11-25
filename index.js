@@ -150,6 +150,10 @@ List=(routeList)=>{
     const MiddlewareFolder=newMiddlewares && newMiddlewares!='' ? newMiddlewares+'/' : '';
     const ControllerFolder=newControllers+'/';
 
+    routeList.sort((a, b) => {
+        return a.method > b.method;
+    });
+
     routeList.map(route=>{
         let keys=Object.keys(route);
         if(keys.join(',').indexOf('group')==-1){
