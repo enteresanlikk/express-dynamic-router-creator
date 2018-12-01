@@ -79,42 +79,78 @@
     ...
 
     module.exports={
-        rootUrl:'api', //Optional
-        version:{ //Optional
-            text:'v', //Optional
-            number:1 //Optional
+        rootUrl: 'api', //Optional
+        version: { //Optional
+            text: 'v', //Optional
+            number: 1 //Optional
         },
-        optionsMiddleware:cors(corsOptions), - Optional
-        middleware:'SetHeader', // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
+        optionsMiddleware: cors(corsOptions), - Optional
+        middleware: 'SetHeader', // or ['TestMid1', 'TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
+        status: false //This closes all referrers under the routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
         routes:[
             {
-                method:'GET',
-                url:'home',
-                controller:'IndexController',
-                action:'Index',
-                middleware:['TestMid1','TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
+                method: 'GET',
+                url: 'home',
+                controller: 'IndexController',
+                action: 'Index',
+                middleware: ['TestMid1', 'TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
+                status: false //It just turns off this routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
             },
             {
-                groupUrl:'example',
-                middleware:['TestMid1','TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
-                groupRoutes:example
+                groupUrl: 'example',
+                middleware: ['TestMid1', 'TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
+                groupRoutes:example,
+                status: false //This closes all referrers under the routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
             }
         ]
     };
+
+> RootUrl and version are optional. The text and number fields in the version are also optional.
     
    example.js ([example/routers/example.js](example/routers/example.js))
    
-    module.exports=[
+    module.exports = [
         {
-            method:'GET',
-            url:'home',
-            controller:'IndexController',
-            action:'Index',
-            middleware:'TestMid1' // or ['TestMid1','TestMid2',...] -> The middleware(s) will affect the route. - Optional
+            method: 'GET',
+            url: 'home',
+            controller: 'IndexController',
+            action: 'Index'
+        },
+        {
+            method: 'GET',
+            url: 'home-2',
+            controller: 'IndexController',
+            action: 'Index',
+            middleware: 'TestMid1'
+        },
+        {
+            method: 'GET',
+            url: 'home-3',
+            controller: 'IndexController',
+            action: 'Index',
+            middleware: 'TestMid1'
         }
     ];
-    
-> RootUrl and version are optional. The text and number fields in the version are also optional.
+
+   root.js ([example/routers/root.js](example/routers/root.js))
+   
+    module.exports = {
+        status: false,
+        routes: [
+            {
+                method: 'GET',
+                url: 'root',
+                controller: 'IndexController',
+                action: 'Index'
+            },
+            {
+                method: 'GET',
+                url: 'root-2',
+                controller: 'IndexController',
+                action: 'Index'
+            }
+        ]
+    };
 
 ### Routing Examples
 

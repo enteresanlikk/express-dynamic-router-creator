@@ -6,8 +6,8 @@ module.exports={
     routes: [
         {
             groupUrl: 'example',
-            middleware: 'TestMid2',
-            groupRoutes: example
+            groupRoutes: example,
+            status: false
         },
         {
             method: 'GET',

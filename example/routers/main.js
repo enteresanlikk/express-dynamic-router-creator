@@ -31,7 +31,8 @@ module.exports={
             method: 'GET',
             url: 'home',
             controller: 'IndexController',
-            action: 'Index'
+            action: 'Index',
+            status: false
         },
         {
             groupUrl: 'example',

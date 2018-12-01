@@ -10,6 +10,7 @@ let newVersionNumber;
 let newVersion='';
 let newRootMiddleware='';
 let newRouteFile='';
+let newAppStatus = true;
 
 let newRoutes =[];
 
@@ -50,7 +51,7 @@ setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
     newVersionText='';
     newVersionNumber='';
     newVersion='';
-    let {rootUrl, version, routes, middleware, optionsMiddleware} = Routes;
+    let {rootUrl, version, routes, middleware, optionsMiddleware, status} = Routes;
 
     newApp=app;
 
@@ -100,6 +101,7 @@ setVariables=({app,folders:{middlewares,controllers},log}, Routes, RouteFile)=>{
     //Set Opitons Middleware
 
     newRouteFile=RouteFile;
+    newAppStatus = typeof status === 'boolean' ? status : true;
 }
 
 SetMiddlewares=(middleware)=>{
@@ -143,6 +145,7 @@ SetMiddlewares=(middleware)=>{
 }
 
 let groupMiddleware;
+let groupStatus = true;
 
 List=(routeList)=>{
 
@@ -164,7 +167,8 @@ List=(routeList)=>{
                 controller,
                 action,
                 method,
-                middleware
+                middleware,
+                status = true
             } = route;
             method=method.toLowerCase();
 
@@ -212,23 +216,25 @@ List=(routeList)=>{
                         case 'delete':
                         case 'options':
                             if(newLog){
-                                console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.yellow(controller)}@${colors.yellow(action)} ${colors.cyan((AllRouteMiddlewares.length>0 && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : ''))}`);
+                                console.log(`[${colors.green(method)}] ${colors.cyan(FullUrl)} ${colors.yellow(controller)}@${colors.yellow(action)} ${colors.cyan((AllRouteMiddlewares.length>0 && MiddlewareFolder!='' ? ((AllRouteMiddlewares.length>1) ? '| Middlewares - '+AllRouteMiddlewares.toString() : '| Middleware - '+AllRouteMiddlewares.toString()) : ''))} ${colors.red(!newAppStatus || !status || !groupStatus ? '- Passive' : '')}`);
                             }
-                            if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){
+                            if(newAppStatus && status && groupStatus) {
+                                if(AllRouteMiddlewares.length>0 && MiddlewareFolder!=''){
 
-                                newApp[method](`${FullUrl}`
-                                    ,(typeof AllRouteMiddlewares==='object')
-                                        ?  AllRouteMiddlewares.map(mid=>{
-                                            if(typeof mid === 'function'){
-                                                return mid
-                                            }else{
-                                                return require(MiddlewareFolder+mid)
-                                            }
-                                        })
-                                        : require(MiddlewareFolder+AllRouteMiddlewares)
-                                    ,require(`${FullControllerPath}`)[`${action}`]);
-                            }else{
-                                newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                                    newApp[method](`${FullUrl}`
+                                        ,(typeof AllRouteMiddlewares==='object')
+                                            ?  AllRouteMiddlewares.map(mid=>{
+                                                if(typeof mid === 'function'){
+                                                    return mid
+                                                }else{
+                                                    return require(MiddlewareFolder+mid)
+                                                }
+                                            })
+                                            : require(MiddlewareFolder+AllRouteMiddlewares)
+                                        ,require(`${FullControllerPath}`)[`${action}`]);
+                                }else{
+                                    newApp[method](`${FullUrl}`,require(`${FullControllerPath}`)[`${action}`]);
+                                }
                             }
                             break;
                         default:
@@ -251,9 +257,11 @@ List=(routeList)=>{
             if(route.middleware){
                 groupMiddleware=route.middleware;
             }
+            groupStatus =  typeof route.status === 'boolean' ? route.status : true;
             List(route.groupRoutes,Dir);
             OldGroupUrl=[];
             groupMiddleware='';
+            groupStatus = true;
         }
     });
 }
