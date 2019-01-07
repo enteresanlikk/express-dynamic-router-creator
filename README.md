@@ -1,4 +1,7 @@
 # **Express Dynamic Router Creator**
+
+### **Because the library is rewritten, please arrange your structure according to the new.*
+
 > With this module you will be able to write dynamic created routing with express.
 
 
@@ -20,37 +23,30 @@
     ...
     
     //Import
-    const express=require('express');
-    const app=express();
-    const path=require('path');
-    const DynamicRoute=require('express-dynamic-router-creator');
+    const express = require('express');
+    const app = express();
+    const path = require('path');
+    const DynamicRoute = new require('express-dynamic-router-creator').default;
     
     ...
     
-    DynamicRoute.Config({
-        app:app,
-        folders:{
-            routers:path.join(__dirname,'routers'), //Routers folder
-            middlewares:path.join(__dirname,'middlewares'), //Middlewares folder - Optional
-            controllers:path.join(__dirname,'controllers') //Controllers folder
+    new DynamicRoute(
+        app,
+        {
+            Routers: path.join(__dirname,'routers'),
+            Middlewares: path.join(__dirname,'middlewares'),
+            Controllers: path.join(__dirname,'controllers')
         },
-        mainFile:['main.js','root.js','test.js'], //OR 'main.js' -> It is your main file in the Routers folder.
-        log:true //If the log is open it will tell you about the URLs.
-    });
+        ['main.js', 'client.js']
+    );
     
-> **Info:** The files or files you define in mainFile work independently of each other. For example, if you have a router for the front of a route file, then the other file contains the necessary routing for the background. When defining a file, you need to enter the file name into '. If you want to define more than one file, you must define your files in an array.
+> **Info:** The files or files you define in mainFile work independently of each other. For example, if you have a router for the front of a route file, then the other file contains the necessary routing for the background. When defining a file, you need to enter the file name into. If you want to define more than one file, you must define your files in an array.
 
-> **Note:** The output of the open log feature.
-> 
-> ![Log Image](log.png)
+> The output of the open log feature.
+
+![Log Image](log.png)
 
 > **Note:** The file that creates dynamic routing is the **index.js** file. In the example, it is in the **module** folder.
-
-### Folder Structure (Example)
-        1. controllers
-        2. middlewares
-        3. routers
-        4. server.js
         
 ### Code Example
    main.js ([example/routers/main.js](example/routers/main.js))
@@ -58,7 +54,6 @@
     ...
 
     const cors = require('cors');
-    const example = require('./example');
     
     ...
 
@@ -75,90 +70,93 @@
         methods:'OPTIONS',
         credentials:true
     }
-    
-    ...
 
-    module.exports={
-        rootUrl: 'api', //Optional
-        version: { //Optional
-            text: 'v', //Optional
-            number: 1 //Optional
-        },
-        optionsMiddleware: cors(corsOptions), - Optional
-        middleware: 'SetHeader', // or ['TestMid1', 'TestMid2',...] -> The middleware(s) will affect the whole project. - Optional
-        status: false //This closes all referrers under the routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
-        routes:[
+    module.exports= [
+    {
+        OptionsMiddlewares: [cors(corsOptions)],
+        Middlewares: ['TestMid1'],
+        Routes: [
             {
-                method: 'GET',
-                url: 'home',
-                controller: 'IndexController',
-                action: 'Index',
-                middleware: ['TestMid1', 'TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
-                status: false //It just turns off this routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
+                Method: 'POST',
+                Controller: 'IndexController',
+                Action: 'Index'
             },
             {
-                groupUrl: 'example',
-                middleware: ['TestMid1', 'TestMid2'], // or 'SetHeader' -> The middleware(s) will affect the route. - Optional
-                groupRoutes:example,
-                status: false //This closes all referrers under the routing. With this feature, routing can be turned off. If this value is not entered, it is turned on by default. Gets the value true or false. - Optional
+                Url: 'example-1',
+                Method: 'GET',
+                Routes: [
+                        {
+                            Method: 'GET',
+                            Url: 'home',
+                            Controller: 'IndexController',
+                            Action: 'Index'
+                        },
+                        {
+                            Url: 'example-2',
+                            Middlewares: ['TestMid1'],
+                            Method: 'PUT',
+                            Routes: [
+                                    {
+                                        Url: 'home-2',
+                                        Controller: 'IndexController',
+                                        Action: 'Index',
+                                        Method: 'DELETE',
+                                        Middlewares: ['TestMid1']
+                                    },
+                                    {
+                                        Url: 'example-3',
+                                        Middlewares: ['TestMid2'],
+                                        Routes: [
+                                            {
+                                                Url: 'home-2',
+                                                Controller: 'IndexController',
+                                                Action: 'Index',
+                                                Middlewares: ['TestMid1']
+                                            },
+                                            {
+                                                Url: 'example-4',
+                                                Routes: [
+                                                    {
+                                                        Method: 'GET',
+                                                        Url: 'bilal-burada',
+                                                        Controller: 'IndexController',
+                                                        Action: 'Index'
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                Url: 'home-3',
+                                Controller: 'IndexController',
+                                Action: 'Index'
+                            }
+                        ]
+                    }
+                ]
             }
-        ]
-    };
+        ];
 
-> RootUrl and version are optional. The text and number fields in the version are also optional.
-    
-   example.js ([example/routers/example.js](example/routers/example.js))
-   
-    module.exports = [
-        {
-            method: 'GET',
-            url: 'home',
-            controller: 'IndexController',
-            action: 'Index'
-        },
-        {
-            method: 'GET',
-            url: 'home-2',
-            controller: 'IndexController',
-            action: 'Index',
-            middleware: 'TestMid1'
-        },
-        {
-            method: 'GET',
-            url: 'home-3',
-            controller: 'IndexController',
-            action: 'Index',
-            middleware: 'TestMid1'
-        }
-    ];
 
-   root.js ([example/routers/root.js](example/routers/root.js))
-   
-    module.exports = {
-        status: false,
-        routes: [
-            {
-                method: 'GET',
-                url: 'root',
-                controller: 'IndexController',
-                action: 'Index'
-            },
-            {
-                method: 'GET',
-                url: 'root-2',
-                controller: 'IndexController',
-                action: 'Index'
-            }
-        ]
-    };
+> ### **Config Params**
+|Param|Description|
+|--|--|
+|**First Param**|Send the express server parameter. **Required**|
+|**Second Param**|The folder definitions required for the project are given here. **Routers**, **Middlewares** and **Controllers** parameters can be sent. Must be object. **Required**|
+|**Third Param**|Route files are defined here. Must be array. **Required**|
+|**Fourth Param**|This parameter is sent to the console to print information. Must be boolean. **Optional**|
 
-### Routing Examples
 
-    1. http://localhost:[YOUR_APP_PORT]/[ROOT_URL]/[VERSION_TEXT][VERSION_NUMBER]/[ROUTES_URL]
-    2. http://localhost:[YOUR_APP_PORT]/[ROOT_URL]/[VERSION_NUMBER]/[ROUTES_URL]
-    3. http://localhost:[YOUR_APP_PORT]/[ROOT_URL]/[VERSION_TEXT]/[ROUTES_URL]
-    4. http://localhost:[YOUR_APP_PORT]/[VERSION_TEXT][VERSION_NUMBER]/[ROUTES_URL]
-    5. http://localhost:[YOUR_APP_PORT]/[VERSION_NUMBER]/[ROUTES_URL]
-    6. http://localhost:[YOUR_APP_PORT]/[VERSION_TEXT]/[ROUTES_URL]
-    7. http://localhost:[YOUR_APP_PORT]/[ROOT_URL]/[ROUTES_URL]
-    8. http://localhost:[YOUR_APP_PORT]/[ROUTES_URL]
+> ### **Route File Params**
+|Param|Description|Default Values|
+|--|--|--|
+|**Method**|The route is defined by which request to work. If the method is not sent and if it is in a sub-route, it takes the method of the next route un. Must be string. *It can be optional according to the upper route.*|GET, POST, PUT, DELETE, OPTIONS|
+|**Url**|The route url is defined. if this parameter is not sent '/' is defined. If it is located in a sub-route group, it is combined with the top route urls. Must be string. **Optional**|/|
+|**Controller**|The name of the file that the route is running. It searches the action function in this file. Must be string. **Required**|-|
+|**Action**|Represents the function in which route operations are performed. Must be string. **Required**|-|
+|**Middlewares**|Used to define the middleware of the route. Must be array in string or function. **Optional**|-|
+|**OptionsMiddlewares**|It should only be added to meet the options method. Must be array in string or function. **Optional**|-|
+|**Status**|To make the route u active or passive. By default, the route is active. Must be boolean. **Optional**|true, false|
+|**Routes**|It is used to group routes. The route properties of this parameter are copied to the subroutines. Must be array and it should consist of *Route File Params*. **Optional**|-|

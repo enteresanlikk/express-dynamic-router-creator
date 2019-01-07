@@ -1,7 +1,5 @@
 const cors = require('cors');
 
-const example=require('./example');
-
 const WhiteList = ['http://localhost:3030'];
 var corsOptions = {
     origin: function (origin, callback) {
@@ -9,8 +7,8 @@ var corsOptions = {
             callback(null, true)
         } else {
             callback({
-                status:403,
-                data: 'No Access!'
+                status: 403,
+                data: 'You do not have permission!'
             });
         }
     },
@@ -18,26 +16,70 @@ var corsOptions = {
     credentials: true
 }
 
-module.exports={
-    rootUrl: 'api',
-    version: {
-        text: 'v',
-        number: 1
-    },
-    optionsMiddleware: cors(corsOptions),
-    middleware: 'TestMid1',
-    routes: [
-        {
-            method: 'GET',
-            url: 'home',
-            controller: 'IndexController',
-            action: 'Index',
-            status: false
-        },
-        {
-            groupUrl: 'example',
-            middleware: ['TestMid1', 'TestMid2'],
-            groupRoutes: example
-        }
-    ]
-};
+module.exports= [
+    {
+        OptionsMiddlewares: [cors(corsOptions)],
+        Middlewares: ['TestMid1'],
+        Routes: [
+            {
+                Method: 'POST',
+                Controller: 'IndexController',
+                Action: 'Index'
+            },
+            {
+                Url: 'example-1',
+                Method: 'GET',
+                Routes: [
+                    {
+                        Method: 'GET',
+                        Url: 'home',
+                        Controller: 'IndexController',
+                        Action: 'Index'
+                    },
+                    {
+                        Url: 'example-2',
+                        Middlewares: ['TestMid1'],
+                        Method: 'PUT',
+                        Routes: [
+                            {
+                                Url: 'home-2',
+                                Controller: 'IndexController',
+                                Action: 'Index',
+                                Method: 'DELETE',
+                                Middlewares: ['TestMid1']
+                            },
+                            {
+                                Url: 'example-3',
+                                Middlewares: ['TestMid2'],
+                                Routes: [
+                                    {
+                                        Url: 'home-2',
+                                        Controller: 'IndexController',
+                                        Action: 'Index',
+                                        Middlewares: ['TestMid1']
+                                    },
+                                    {
+                                        Url: 'example-4',
+                                        Routes: [
+                                            {
+                                                Method: 'GET',
+                                                Url: 'bilal-burada',
+                                                Controller: 'IndexController',
+                                                Action: 'Index'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        Url: 'home-3',
+                        Controller: 'IndexController',
+                        Action: 'Index'
+                    }
+                ]
+            }
+        ]
+    }
+];

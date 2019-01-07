@@ -2,19 +2,18 @@ const express=require('express');
 const app=express();
 const path=require('path');
 
-const DynamicRoute=require("../index");
-
-DynamicRoute.Config({
-    app:app,
-    folders:{
-        routers:path.join(__dirname,'routers'),
-        middlewares:path.join(__dirname,'middlewares'),
-        controllers:path.join(__dirname,'controllers')
+const DynamicRoute=require('../index').default;
+new DynamicRoute(
+    app,
+    {
+        Routers: path.join(__dirname,'routers'),
+        Middlewares: path.join(__dirname,'middlewares'),
+        Controllers: path.join(__dirname,'controllers')
     },
-    mainFile:['main.js','root.js','test.js'], //OR 'main.js'
-    log:true
-});
+    ['main.js', 'client.js']
+);
 
-app.listen(8080, ()=>{
+app.set('port', 8080);
+app.listen(app.get('port'), ()=>{
     console.log('Server started at 8080 port.');
 });
