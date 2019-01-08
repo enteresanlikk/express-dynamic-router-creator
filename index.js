@@ -125,6 +125,22 @@ var DynamicRoute = /** @class */ (function () {
                             }
                         }
                     }
+                    if (!route.Controller) {
+                        for (var i = this_1.groupRoute.length - 1; i >= 0; i--) {
+                            if (typeof this_1.groupRoute[i].Controller !== 'undefined') {
+                                route.Controller = this_1.groupRoute[i].Controller;
+                                break;
+                            }
+                        }
+                    }
+                    if (!route.Action) {
+                        for (var i = this_1.groupRoute.length - 1; i >= 0; i--) {
+                            if (typeof this_1.groupRoute[i].Action !== 'undefined') {
+                                route.Action = this_1.groupRoute[i].Action;
+                                break;
+                            }
+                        }
+                    }
                     if (!route.Method) {
                         for (var i = this_1.groupRoute.length - 1; i >= 0; i--) {
                             if (typeof this_1.groupRoute[i].Method !== 'undefined') {

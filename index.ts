@@ -130,6 +130,24 @@ export default class DynamicRoute {
                         }
                     }
 
+                    if(!route.Controller) {
+                        for(let i=this.groupRoute.length-1; i >= 0;i--) {
+                            if (typeof this.groupRoute[i].Controller !== 'undefined') {
+                                route.Controller = this.groupRoute[i].Controller;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(!route.Action) {
+                        for(let i=this.groupRoute.length-1; i >= 0;i--) {
+                            if (typeof this.groupRoute[i].Action !== 'undefined') {
+                                route.Action = this.groupRoute[i].Action;
+                                break;
+                            }
+                        }
+                    }
+
                     if(!route.Method) {
                         for(let i=this.groupRoute.length-1; i>=0;i--) {
                             if (typeof this.groupRoute[i].Method !== 'undefined') {
