@@ -1,9 +1,13 @@
 'use strict';
+const route = require('../../index').default;
 
 class IndexController{
     Index(req,res){
+        let fullData = route.get('Url', req.url);
+        let otherKey = route.get('test');
         res.json({
-            data: 'Home@Index'
+            fullData,
+            otherKey
         });
     }
 }

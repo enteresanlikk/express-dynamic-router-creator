@@ -3,25 +3,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //Libraries
 var colors_1 = require("./colors");
 var DynamicRoute = /** @class */ (function () {
-    /*
-     * Modül ayarları yapılıyor.
-     */
-    function DynamicRoute(App, Folders, RouteFiles, Info) {
-        if (App === void 0) { App = null; }
-        if (RouteFiles === void 0) { RouteFiles = []; }
-        if (Info === void 0) { Info = true; }
+    function DynamicRoute() {
         this.RouteFiles = [];
         this.Info = true;
         /*
          * Ana url ayarlanıyor.
          */
         this.FinishedRoutes = [];
+        this.AllRoutes = [];
         /*
          * url ler düzenlenecek. Group lar direk objeye dönüşecek.
          */
         this.routeIds = [];
         this.routeId = 0;
         this.groupRoute = [];
+    }
+    /*
+     * Modül ayarları yapılıyor.
+     */
+    DynamicRoute.prototype.Config = function (App, Folders, RouteFiles, Info) {
+        if (App === void 0) { App = null; }
+        if (RouteFiles === void 0) { RouteFiles = []; }
+        if (Info === void 0) { Info = true; }
         this.App = App;
         this.Folders = Folders;
         this.RouteFiles = RouteFiles;
@@ -32,7 +35,7 @@ var DynamicRoute = /** @class */ (function () {
         catch (e) {
             console.log(colors_1.default.red(e));
         }
-    }
+    };
     /*
      * Routing dosyaları dahil ediliyor.
      */
@@ -97,9 +100,8 @@ var DynamicRoute = /** @class */ (function () {
                 this_1.groupRoute.pop();
             }
             else {
-                if (typeof route.Middlewares === 'undefined') {
-                    route.Middlewares = [];
-                }
+                route.Key = route.Key || '';
+                route.Middlewares = route.Middlewares || [];
                 if (route.ParentIds) {
                     var routeParentIds_1 = route.ParentIds.split(',');
                     var routeUrls_1 = [];
@@ -159,7 +161,9 @@ var DynamicRoute = /** @class */ (function () {
                 if (typeof route.Status === 'undefined') {
                     route.Status = true;
                 }
+                route.Url = '/' + route.Url;
                 this_1.FinishedRoutes.push(route);
+                this_1.AllRoutes.push(route);
             }
         };
         var this_1 = this;
@@ -202,7 +206,7 @@ var DynamicRoute = /** @class */ (function () {
                         var FullControllerPath = _this.Folders.Controllers + '/' + route.Controller;
                         var MiddlewaresFolder_1 = _this.Folders.Middlewares;
                         if (route.OptionsMiddlewares) {
-                            _this.App.use(_this.getFullUrl(route.Url) + "*", route.OptionsMiddlewares.map(function (mid) {
+                            _this.App.use(route.Url + "*", route.OptionsMiddlewares.map(function (mid) {
                                 if (typeof mid === 'function') {
                                     return mid;
                                 }
@@ -210,12 +214,12 @@ var DynamicRoute = /** @class */ (function () {
                                     return require(MiddlewaresFolder_1 + '/' + mid);
                                 }
                             }));
-                            _this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                            _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
                         }
                         else {
-                            _this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                            _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
                         }
-                        _this.App["" + route.Method.toLowerCase()]("" + _this.getFullUrl(route.Url), route.Middlewares.map(function (mid) {
+                        _this.App["" + route.Method.toLowerCase()]("" + route.Url, route.Middlewares.map(function (mid) {
                             if (typeof mid === 'function') {
                                 return mid;
                             }
@@ -225,16 +229,43 @@ var DynamicRoute = /** @class */ (function () {
                         }), require("" + FullControllerPath)["" + route.Action]);
                     }
                     else {
-                        _this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
+                        _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
                     }
                 }
                 else {
-                    _this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Method error');
+                    _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Method error');
                 }
             });
         }
         catch (e) {
             console.log(colors_1.default.red(e));
+        }
+    };
+    DynamicRoute.prototype.Search = function (key, value, array) {
+        var retVal = {
+            Key: '',
+            Method: '',
+            Url: '',
+            Controller: '',
+            Action: '',
+            Status: null
+        };
+        for (var i = 0; i < array.length; i++) {
+            var elem = array[i];
+            if (elem[key] == value) {
+                delete elem.OptionsMiddlewares;
+                delete elem.Middlewares;
+                return elem;
+            }
+        }
+        return retVal;
+    };
+    DynamicRoute.prototype.get = function (key, value) {
+        if (value) {
+            return this.Search(key, value, this.AllRoutes);
+        }
+        else {
+            return this.Search('Key', key, this.AllRoutes);
         }
     };
     /*
@@ -245,11 +276,11 @@ var DynamicRoute = /** @class */ (function () {
             console.log(text);
     };
     /*
-     * Rıutelar için bilgiler console a basılıyor.
+     * Routelar için bilgiler console a basılıyor.
      */
-    DynamicRoute.prototype.routeLog = function (method, url, controller, action, middlewares, optionsMiddlewares, error) {
+    DynamicRoute.prototype.routeLog = function (method, key, url, controller, action, middlewares, optionsMiddlewares, error) {
         if (error === void 0) { error = ''; }
-        var text = (error ? "[" + colors_1.default.red("" + method) + "]" : "[" + colors_1.default.green("" + method) + "]") + " " + colors_1.default.cyan(this.getFullUrl(url)) + " " + colors_1.default.yellow("" + controller) + "@" + colors_1.default.yellow("" + action);
+        var text = "" + (error ? "[" + colors_1.default.red("" + method) + "]" : "[" + colors_1.default.green("" + method) + "]") + (key ? "[" + key + "]" : '') + " " + colors_1.default.cyan(url) + " " + colors_1.default.yellow("" + controller) + "@" + colors_1.default.yellow("" + action);
         if (middlewares.length > 0) {
             text += ' ' + colors_1.default.underline(colors_1.default.green('Middleware' + (middlewares.length > 1 ? 's' : '')));
             text += ' -> ' + middlewares.join(',');
@@ -262,14 +293,7 @@ var DynamicRoute = /** @class */ (function () {
         }
         this.log(text);
     };
-    /*
-     * Ana url ile route url i birleştiriliyor.
-     */
-    DynamicRoute.prototype.getFullUrl = function (url) {
-        if (url === void 0) { url = ''; }
-        return url ? '/' + url : '/';
-    };
     return DynamicRoute;
 }());
-exports.default = DynamicRoute;
+exports.default = new DynamicRoute;
 //# sourceMappingURL=index.js.map

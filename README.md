@@ -26,11 +26,11 @@
     const express = require('express');
     const app = express();
     const path = require('path');
-    const DynamicRoute = new require('express-dynamic-router-creator').default;
+    const DynamicRoute = require('express-dynamic-router-creator').default;
     
     ...
     
-    new DynamicRoute(
+    DynamicRoute.Config(
         app,
         {
             Routers: path.join(__dirname,'routers'),
@@ -117,6 +117,7 @@
                                                 Url: 'example-4',
                                                 Routes: [
                                                     {
+                                                        Key: 'test',
                                                         Method: 'GET',
                                                         Url: 'bilal-burada',
                                                         Controller: 'IndexController',
@@ -140,6 +141,7 @@
         ];
 
 
+
 > ### **Config Params**
 |Param|Description|
 |--|--|
@@ -152,6 +154,7 @@
 > ### **Route File Params**
 |Param|Description|Default Values|
 |--|--|--|
+|**Key**|We use it to draw information about the route. It is used with the *get()* function. Must be string. **Optional**|-|
 |**Method**|The route is defined by which request to work. If the method is not sent and if it is in a sub-route, it takes the method of the next route un. Must be string. *It can be optional according to the upper route.*|GET, POST, PUT, DELETE, OPTIONS|
 |**Url**|The route url is defined. if this parameter is not sent '/' is defined. If it is located in a sub-route group, it is combined with the top route urls. Must be string. **Optional**|/|
 |**Controller**|The name of the file that the route is running. It searches the action function in this file. Must be string. **Required**|-|
@@ -160,3 +163,8 @@
 |**OptionsMiddlewares**|It should only be added to meet the options method. Must be array in string or function. **Optional**|-|
 |**Status**|To make the route u active or passive. By default, the route is active. Must be boolean. **Optional**|true, false|
 |**Routes**|It is used to group routes. The route properties of this parameter are copied to the subroutines. Must be array and it should consist of *Route File Params*. **Optional**|-|
+
+> ### **Functions**
+|Function|Description|
+|--|--|
+|**get()**|It is used to draw information about the route. Example; [example/controllers/IndexController.js](example/controllers/IndexController.js)|

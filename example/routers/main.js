@@ -62,6 +62,7 @@ module.exports= [
                                         Url: 'example-4',
                                         Routes: [
                                             {
+                                                Key: 'test',
                                                 Method: 'GET',
                                                 Url: 'bilal-burada',
                                                 Controller: 'IndexController',

@@ -3,7 +3,7 @@ const app=express();
 const path=require('path');
 
 const DynamicRoute=require('../index').default;
-new DynamicRoute(
+DynamicRoute.Config(
     app,
     {
         Routers: path.join(__dirname,'routers'),
@@ -14,6 +14,6 @@ new DynamicRoute(
 );
 
 app.set('port', 8080);
-app.listen(app.get('port'), ()=>{
+app.listen(app.get('port'), ()=> {
     console.log('Server started at 8080 port.');
 });

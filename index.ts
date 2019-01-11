@@ -1,7 +1,7 @@
 //Libraries
 import {default as colors} from './colors';
 
-export default class DynamicRoute {
+class DynamicRoute {
     private App: any;
     private Folders: FolderModel;
     private RouteFiles: Array<string> = [];
@@ -10,7 +10,7 @@ export default class DynamicRoute {
     /*
      * Modül ayarları yapılıyor.
      */
-    constructor(App: any = null, Folders: FolderModel, RouteFiles: string[] = [], Info: boolean = true) {
+    public Config(App: any = null, Folders: FolderModel, RouteFiles: string[] = [], Info: boolean = true) {
         this.App = App;
         this.Folders = Folders;
         this.RouteFiles = RouteFiles;
@@ -52,6 +52,7 @@ export default class DynamicRoute {
      * Ana url ayarlanıyor.
      */
     private FinishedRoutes: Array<RoutesModel> = [];
+    private AllRoutes: Array<RoutesModel> = [];
     private SetMainRouting(Route: Array<RoutesModel>) {
         try {
             this.EditRoutesIds(Route);
@@ -96,10 +97,9 @@ export default class DynamicRoute {
                 this.groupRoute.push(route);
                 this.EditRoutes(route.Routes);
                 this.groupRoute.pop();
-            } else {
-                if(typeof route.Middlewares === 'undefined') { 
-                    route.Middlewares = [];
-                }
+            } else {                
+                route.Key = route.Key || '';
+                route.Middlewares = route.Middlewares || [];
 
                 if(route.ParentIds) {
                     let routeParentIds: string[] = route.ParentIds.split(',');
@@ -161,7 +161,6 @@ export default class DynamicRoute {
                         route.Status = this.groupRoute[0].Status;
                     }
                     
-
                     routeUrls = routeUrls.filter(url => url);
                     route.Url = routeUrls.length > 0 ? routeUrls.join('/') + (route.Url ? '/'+route.Url: '') : '';
 
@@ -172,7 +171,10 @@ export default class DynamicRoute {
                     route.Status = true;
                 }
 
+                route.Url = '/'+route.Url;
+
                 this.FinishedRoutes.push(route);
+                this.AllRoutes.push(route);
             }
         }
     }
@@ -213,7 +215,7 @@ export default class DynamicRoute {
                         let MiddlewaresFolder = this.Folders.Middlewares;
 
                         if (route.OptionsMiddlewares) {
-                            this.App.use(`${this.getFullUrl(route.Url)}*`, 
+                            this.App.use(`${route.Url}*`, 
                                 route.OptionsMiddlewares.map(mid => {
                                     if(typeof mid === 'function') {
                                         return mid
@@ -222,12 +224,12 @@ export default class DynamicRoute {
                                     }
                                 })
                             );
-                            this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                            this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
                         } else {
-                            this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                            this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
                         }
 
-                        this.App[`${route.Method.toLowerCase()}`](`${this.getFullUrl(route.Url)}`,
+                        this.App[`${route.Method.toLowerCase()}`](`${route.Url}`,
                             route.Middlewares.map(mid=> {
                                 if(typeof mid === 'function'){
                                     return mid
@@ -238,14 +240,43 @@ export default class DynamicRoute {
                             ,require(`${FullControllerPath}`)[`${route.Action}`]);
 
                     } else {
-                        this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
+                        this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
                     }
                 } else {
-                    this.routeLog(route.Method, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Method error');
+                    this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Method error');
                 }
             });
         } catch(e) {
             console.log(colors.red(e));
+        }
+    }
+
+    private Search(key: string, value: string, array: Array<RoutesModel>) {
+        let retVal = <RoutesModel>{
+            Key: '',
+            Method: '',
+            Url: '',
+            Controller: '',
+            Action: '',
+            Status: null
+        };
+
+        for(let i=0; i < array.length; i++) {
+            let elem = array[i];
+            if(elem[key] == value) {
+                delete elem.OptionsMiddlewares;
+                delete elem.Middlewares;
+                return elem;
+            }
+        }
+        return retVal;
+    }
+
+    public get(key: string, value?: string) {
+        if(value) {
+            return this.Search(key, value, this.AllRoutes);
+        } else {
+            return this.Search('Key', key, this.AllRoutes);
         }
     }
 
@@ -258,10 +289,10 @@ export default class DynamicRoute {
     }
 
     /*
-     * Rıutelar için bilgiler console a basılıyor.
+     * Routelar için bilgiler console a basılıyor.
      */
-    private routeLog(method: string, url: string, controller: string, action: string, middlewares: any[], optionsMiddlewares: any[], error: string = '') {
-        let text: string = `${error ? `[${colors.red(`${method}`)}]` : `[${colors.green(`${method}`)}]`} ${colors.cyan(this.getFullUrl(url))} ${colors.yellow(`${controller}`)}@${colors.yellow(`${action}`)}`;
+    private routeLog(method: string, key: string, url: string, controller: string, action: string, middlewares: any[], optionsMiddlewares: any[], error: string = '') {
+        let text: string = `${error ? `[${colors.red(`${method}`)}]` : `[${colors.green(`${method}`)}]`}${key ? `[${key}]` : ''} ${colors.cyan(url)} ${colors.yellow(`${controller}`)}@${colors.yellow(`${action}`)}`;
         if(middlewares.length > 0) {
             text+= ' '+colors.underline(colors.green('Middleware'+(middlewares.length > 1 ? 's':'')));
             text += ' -> '+middlewares.join(',');
@@ -273,13 +304,6 @@ export default class DynamicRoute {
             text += colors.red(' -> '+error);
         }
         this.log(text);
-    }
-
-    /*
-     * Ana url ile route url i birleştiriliyor.
-     */
-    private getFullUrl(url: string = '') {
-        return url ? '/'+url : '/';
     }
 }
 
@@ -296,6 +320,7 @@ interface FolderModel {
 interface RoutesModel {
     Id: number;
     ParentIds: string;
+    Key: string;
     Method: string;
     Url: string;
     Controller: string;
@@ -305,3 +330,5 @@ interface RoutesModel {
     Status: boolean;
     Routes: Array<RoutesModel>;
 }
+
+export default new DynamicRoute;
