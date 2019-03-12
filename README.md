@@ -178,7 +178,7 @@
 |**Method**|The route is defined by which request to work. If the method is not sent and if it is in a sub-route, it takes the method of the next route un. Must be string. *It can be optional according to the upper route.*|GET, POST, PUT, DELETE, OPTIONS|
 |**Url**|The route url is defined. if this parameter is not sent '/' is defined. If it is located in a sub-route group, it is combined with the top route urls. Must be string. **Optional**|/|
 |**Controller**|The name of the file that the route is running. It searches the action function in this file. Must be string. **Required**|-|
-|**Action**|Represents the function in which route operations are performed. Must be string. **Required**|-|
+|**Action**|Represents the function in which route operations are performed. Must be string or function. **Required**|-|
 |**Middlewares**|Used to define the middleware of the route. Must be array in string or function. **Optional**|-|
 |**OptionsMiddlewares**|It should only be added to meet the options method. Must be array in string or function. **Optional**|-|
 |**Status**|To make the route u active or passive. By default, the route is active. Must be boolean. **Optional**|true, false|
