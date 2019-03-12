@@ -101,7 +101,7 @@ var DynamicRoute = /** @class */ (function () {
             }
             else {
                 route.Key = route.Key || '';
-                route.Middlewares = route.Middlewares || [];
+                route.Middlewares = typeof route.Middlewares === 'function' ? [route.Middlewares] : (route.Middlewares || []);
                 if (route.ParentIds) {
                     var routeParentIds_1 = route.ParentIds.split(',');
                     var routeUrls_1 = [];
@@ -206,7 +206,7 @@ var DynamicRoute = /** @class */ (function () {
                         var FullControllerPath = _this.Folders.Controllers + '/' + route.Controller;
                         var MiddlewaresFolder_1 = _this.Folders.Middlewares;
                         if (route.OptionsMiddlewares) {
-                            _this.App.use(route.Url + "*", route.OptionsMiddlewares.map(function (mid) {
+                            _this.App.use(route.Url + "/*", route.OptionsMiddlewares.map(function (mid) {
                                 if (typeof mid === 'function') {
                                     return mid;
                                 }
@@ -214,7 +214,9 @@ var DynamicRoute = /** @class */ (function () {
                                     return require(MiddlewaresFolder_1 + '/' + mid);
                                 }
                             }));
-                            _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                        }
+                        if (typeof route.Action === 'function') {
+                            _this.routeLog(route.Method, route.Key, route.Url, '', '', route.Middlewares, route.OptionsMiddlewares, '', 'Inline Code');
                         }
                         else {
                             _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
@@ -226,7 +228,7 @@ var DynamicRoute = /** @class */ (function () {
                             else {
                                 return require(MiddlewaresFolder_1 + '/' + mid);
                             }
-                        }), require("" + FullControllerPath)["" + route.Action]);
+                        }), (typeof route.Action === 'function' ? route.Action : require("" + FullControllerPath)["" + route.Action]));
                     }
                     else {
                         _this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
@@ -238,6 +240,7 @@ var DynamicRoute = /** @class */ (function () {
             });
         }
         catch (e) {
+            console.log(e);
             console.log(colors_1.default.red(e));
         }
     };
@@ -278,18 +281,33 @@ var DynamicRoute = /** @class */ (function () {
     /*
      * Routelar için bilgiler console a basılıyor.
      */
-    DynamicRoute.prototype.routeLog = function (method, key, url, controller, action, middlewares, optionsMiddlewares, error) {
+    DynamicRoute.prototype.routeLog = function (method, key, url, controller, action, middlewares, optionsMiddlewares, error, codeInfo) {
         if (error === void 0) { error = ''; }
-        var text = "" + (error ? "[" + colors_1.default.red("" + method) + "]" : "[" + colors_1.default.green("" + method) + "]") + (key ? "[" + key + "]" : '') + " " + colors_1.default.cyan(url) + " " + colors_1.default.yellow("" + controller) + "@" + colors_1.default.yellow("" + action);
+        if (codeInfo === void 0) { codeInfo = ''; }
+        var text = "" + (error ? "[" + colors_1.default.red("" + method) + "]" : (codeInfo ? "[" + colors_1.default.cyan("" + method) + "]" : "[" + colors_1.default.green("" + method) + "]")) + (key ? "[" + key + "]" : '') + " " + colors_1.default.cyan(url);
+        text += controller && action ? " " + colors_1.default.yellow("" + controller) + "@" + colors_1.default.yellow("" + action) : '';
         if (middlewares.length > 0) {
             text += ' ' + colors_1.default.underline(colors_1.default.green('Middleware' + (middlewares.length > 1 ? 's' : '')));
-            text += ' -> ' + middlewares.join(',');
+            var midStr_1 = '';
+            middlewares.map(function (mid, i) {
+                if (typeof mid === 'function') {
+                    midStr_1 += "Function" + i;
+                }
+                else {
+                    midStr_1 += "" + mid;
+                }
+                midStr_1 += middlewares.length - 1 !== i ? ', ' : '';
+            });
+            text += " -> " + midStr_1;
         }
         if (optionsMiddlewares && optionsMiddlewares.length > 0) {
             text += ' -> ' + colors_1.default.blue('Options Middleware' + (optionsMiddlewares.length > 1 ? 's' : ''));
         }
         if (error) {
             text += colors_1.default.red(' -> ' + error);
+        }
+        if (codeInfo) {
+            text += colors_1.default.cyan(' -> ' + codeInfo);
         }
         this.log(text);
     };

@@ -24,6 +24,7 @@
   "author": "Bilal Demir",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^11.11.2",
     "fs": "0.0.1-security",
     "path": "^0.12.7"
   },

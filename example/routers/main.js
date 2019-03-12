@@ -23,18 +23,36 @@ module.exports= [
         Routes: [
             {
                 Method: 'POST',
-                Controller: 'IndexController',
-                Action: 'Index'
+                Action: (req, res, next)=> {
+                    console.log("Inline Code 1");
+                    res.json({
+                        code: "This is inline code."
+                    });
+                }
             },
             {
                 Url: 'example-1',
                 Method: 'GET',
+                Middlewares: [
+                    (req, res, next)=> {
+                        res.setHeader('Middleware','Inline Middleware');
+                        next();
+                    },
+                    (req, res, next)=> {
+                        res.setHeader('Middleware_2','Inline Middleware');
+                        next();
+                    }
+                ],
                 Routes: [
                     {
                         Method: 'GET',
                         Url: 'home',
-                        Controller: 'IndexController',
-                        Action: 'Index'
+                        Action: (req, res, next)=> {
+                            console.log("Inline Code 2");
+                            res.json({
+                                code: "This is inline code."
+                            });
+                        }
                     },
                     {
                         Url: 'example-2',

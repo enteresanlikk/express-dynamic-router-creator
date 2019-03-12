@@ -99,7 +99,7 @@ class DynamicRoute {
                 this.groupRoute.pop();
             } else {                
                 route.Key = route.Key || '';
-                route.Middlewares = route.Middlewares || [];
+                route.Middlewares = typeof route.Middlewares === 'function' ? [route.Middlewares] : (route.Middlewares || []);
 
                 if(route.ParentIds) {
                     let routeParentIds: string[] = route.ParentIds.split(',');
@@ -215,7 +215,7 @@ class DynamicRoute {
                         let MiddlewaresFolder = this.Folders.Middlewares;
 
                         if (route.OptionsMiddlewares) {
-                            this.App.use(`${route.Url}*`, 
+                            this.App.use(`${route.Url}/*`, 
                                 route.OptionsMiddlewares.map(mid => {
                                     if(typeof mid === 'function') {
                                         return mid
@@ -224,20 +224,23 @@ class DynamicRoute {
                                     }
                                 })
                             );
-                            this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
+                        }
+
+                        if(typeof route.Action === 'function') {
+                            this.routeLog(route.Method, route.Key, route.Url, '', '', route.Middlewares, route.OptionsMiddlewares, '', 'Inline Code');
                         } else {
                             this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares);
                         }
 
                         this.App[`${route.Method.toLowerCase()}`](`${route.Url}`,
                             route.Middlewares.map(mid=> {
-                                if(typeof mid === 'function'){
+                                if(typeof mid === 'function') {
                                     return mid
-                                }else{
+                                } else {
                                     return require(MiddlewaresFolder+'/'+mid)
                                 }
                             })
-                            ,require(`${FullControllerPath}`)[`${route.Action}`]);
+                            , (typeof route.Action === 'function' ? route.Action : require(`${FullControllerPath}`)[`${route.Action}`]) );
 
                     } else {
                         this.routeLog(route.Method, route.Key, route.Url, route.Controller, route.Action, route.Middlewares, route.OptionsMiddlewares, 'Passive');
@@ -247,6 +250,7 @@ class DynamicRoute {
                 }
             });
         } catch(e) {
+            console.log(e);
             console.log(colors.red(e));
         }
     }
@@ -291,17 +295,31 @@ class DynamicRoute {
     /*
      * Routelar için bilgiler console a basılıyor.
      */
-    private routeLog(method: string, key: string, url: string, controller: string, action: string, middlewares: any[], optionsMiddlewares: any[], error: string = '') {
-        let text: string = `${error ? `[${colors.red(`${method}`)}]` : `[${colors.green(`${method}`)}]`}${key ? `[${key}]` : ''} ${colors.cyan(url)} ${colors.yellow(`${controller}`)}@${colors.yellow(`${action}`)}`;
+    private routeLog(method: string, key: string, url: string, controller: string, action: string, middlewares: any[], optionsMiddlewares: any[], error: string = '', codeInfo: string = '') {
+        let text: string = `${error ? `[${colors.red(`${method}`)}]` : (codeInfo ? `[${colors.cyan(`${method}`)}]` : `[${colors.green(`${method}`)}]`) }${key ? `[${key}]` : ''} ${colors.cyan(url)}`;
+        text += controller && action ? ` ${colors.yellow(`${controller}`)}@${colors.yellow(`${action}`)}` : '';
         if(middlewares.length > 0) {
             text+= ' '+colors.underline(colors.green('Middleware'+(middlewares.length > 1 ? 's':'')));
-            text += ' -> '+middlewares.join(',');
+            
+            let midStr: string = '';
+            middlewares.map((mid, i) => {
+                if(typeof mid === 'function') {
+                    midStr += `Function${i}`;
+                } else {
+                    midStr += `${mid}`;
+                }
+                midStr += middlewares.length-1 !== i ? ', ': '';
+            });
+            text += ` -> ${midStr}`;
         }
         if(optionsMiddlewares && optionsMiddlewares.length > 0) {
             text+= ' -> '+colors.blue('Options Middleware'+(optionsMiddlewares.length > 1 ? 's':''));
         }
         if(error) {
             text += colors.red(' -> '+error);
+        }
+        if(codeInfo) {
+            text += colors.cyan(' -> '+codeInfo);
         }
         this.log(text);
     }
@@ -324,7 +342,7 @@ interface RoutesModel {
     Method: string;
     Url: string;
     Controller: string;
-    Action: string;
+    Action: any;
     Middlewares: any[];
     OptionsMiddlewares: any[];
     Status: boolean;
