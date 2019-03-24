@@ -1,7 +1,5 @@
 # **Express Dynamic Router Creator**
 
-### **Because the library is rewritten, please arrange your structure according to the new.*
-
 > With this module you will be able to write dynamic created routing with express.
 
 
