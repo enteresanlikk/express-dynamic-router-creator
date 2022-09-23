@@ -17,4 +17,6 @@ module.exports = {
   folders_is_required: 'folders is required',
   routerFiles_is_required: 'routerFiles is required',
   folders_routers_is_required: 'folders.routers is required',
+
+  server_is_running: 'Server is running on',
 };

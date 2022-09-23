@@ -1,13 +1,14 @@
 'use strict';
 
 const express = require('express');
-const app = express();
 const path = require('path');
 
+const app = express();
 const DynamicRouter = require('../..');
 
 new DynamicRouter({
-  app,
+  app: app,
+  port: process.env.PORT || 3000,
   folders: {
     routers: path.join(__dirname, 'routers'),
     controllers: path.join(__dirname, 'controllers'),
@@ -15,8 +16,3 @@ new DynamicRouter({
   },
   routerFiles: ['api/main', 'client'],
 }).run();
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});

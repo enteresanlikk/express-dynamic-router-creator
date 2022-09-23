@@ -56,6 +56,7 @@ app.listen(port, () => {
 ```javascript
 new DynamicRouter({
   app,
+  port: process.env.PORT || 3000,
   folders: {
     routers: path.join(__dirname, 'routers'),
     controllers: path.join(__dirname, 'controllers'),
@@ -69,6 +70,7 @@ new DynamicRouter({
 | Param           | Description                                                                                                                                                           |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **app**         | Send the express app parameter. **Required**                                                                                                                          |
+|**port**| Send the express port parameter. *if the port is set you don't need to do `listen`*. **Optional**|
 | **folders**     | The folder definitions required for the project are given here. **routers**, **controllers** and **middlewares** parameters can be sent. Must be object. **Required** |
 | **routerFiles** | Route files are defined here. Must be array. **Required**                                                                                                             |
 | **info**        | This parameter is sent to the console to print information. Must be boolean. Default value `true`. **Optional**                                                       |
