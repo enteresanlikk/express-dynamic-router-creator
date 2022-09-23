@@ -1,6 +1,6 @@
 {
   "name": "express-dynamic-router-creator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "With this module you will be able to write dynamic created routing with express.",
   "main": "index.js",
   "repository": {
@@ -10,7 +10,6 @@
   "keywords": [
     "node",
     "express",
-    "fs",
     "path",
     "routing",
     "dynamic",

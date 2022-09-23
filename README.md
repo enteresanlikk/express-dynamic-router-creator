@@ -88,41 +88,53 @@ new DynamicRouter({
     ],
     routes: [
       {
-        url: 'v1',
+        url: 'users',
+        middlewares: ['auth.middleware'],
+        controller: 'users.controller',
         routes: [
           {
-            url: 'users',
-            middlewares: ['auth.middleware'],
-            controller: 'users.controller',
-            status: false,
+            action: 'getAll',
+          },
+          {
+            method: 'post',
+            action: 'add',
+          },
+          {
+            url: ':id',
             routes: [
               {
-                action: 'getAll',
+                method: 'put',
+                action: 'update',
               },
               {
-                method: 'test',
-                action: 'add',
+                method: 'delete',
+                action: 'delete',
               },
               {
-                url: ':id',
-                routes: [
-                  {
-                    controller: 'user.controller',
-                    method: 'put',
-                    action: 'update',
-                  },
-                  {
-                    method: 'delete',
-                    action: 'del',
-                  },
-                  {
-                    action: 'get',
-                  },
-                ],
+                action: 'get',
               },
             ],
           },
         ],
+      },
+      {
+        key: 'not_found_handler',
+        method: 'use',
+        action: (req, res, next) => {
+          next({
+            status: 404,
+            message: 'Not Found',
+          });
+        },
+      },
+      {
+        key: 'error_handler',
+        method: 'use',
+        action: (error, req, res, next) => {
+          res
+            .status(error.status || 500)
+            .send(error.message || 'Internal Server Error');
+        },
       },
     ],
   },
@@ -137,4 +149,5 @@ new DynamicRouter({
 | **action**      | Represents the function in which route operations are performed. Must be string or function. **_Required_**                                                                                                                   |                |
 | **middlewares** | Used to define the middleware of the route. Must be array in string or function. **_It can be optional according to the upper route._**                                                                                       |                |
 | **status**      | To make the route u active or passive. By default, the route is active. Must be boolean. **_Optional_**                                                                                                                       | true           |
+| **key**         | Used to distinguish routes. If no value is entered, it will be created automatically according to the url. **_Optional_**                                                                                                     |                |
 | **routes**      | It is used to group routes. The route properties of this parameter are copied to the subroutines. Must be array and it should consist of _Route File Params_. **_Optional_**                                                  |                |

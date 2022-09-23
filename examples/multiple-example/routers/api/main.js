@@ -36,6 +36,25 @@ module.exports = [
         url: 'v2',
         routes: v2Routes,
       },
+      {
+        key: 'not_found_handler',
+        method: 'use',
+        action: (req, res, next) => {
+          next({
+            status: 404,
+            message: 'Not Found',
+          });
+        },
+      },
+      {
+        key: 'error_handler',
+        method: 'use',
+        action: (error, req, res, next) => {
+          res
+            .status(error.status || 500)
+            .send(error.message || 'Internal Server Error');
+        },
+      },
     ],
   },
 ];

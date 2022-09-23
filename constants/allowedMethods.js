@@ -12,4 +12,5 @@ module.exports = [
   'link',
   'unlink',
   'purge',
+  'use',
 ];
