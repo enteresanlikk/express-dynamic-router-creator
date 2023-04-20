@@ -50,6 +50,7 @@ app.listen(port, () => {
 3. [Middleware Example](/examples/middlewares-example)
 4. [Multiple Example](/examples/multiple-example)
 5. [Versioning Example](/examples/versioning-example)
+6. [One File Example](/examples/one-file-example)
 
 ### **Config Params**
 
@@ -67,13 +68,47 @@ new DynamicRouter({
 });
 ```
 
-| Param           | Description                                                                                                                                                           |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **app**         | Send the express app parameter. **Required**                                                                                                                          |
-|**port**| Send the express port parameter. *if the port is set you don't need to do `listen`*. **Optional**|
-| **folders**     | The folder definitions required for the project are given here. **routers**, **controllers** and **middlewares** parameters can be sent. Must be object. **Required** |
-| **routerFiles** | Route files are defined here. Must be array. **Required**                                                                                                             |
-| **info**        | This parameter is sent to the console to print information. Must be boolean. Default value `true`. **Optional**                                                       |
+Or
+
+```javascript
+new DynamicRouter({
+  app,
+  port: process.env.PORT || 3000,
+  routers: [
+    {
+      url: 'api',
+      method: 'get',
+      middlewares: [
+        (req, res, next) => {
+          res.setHeader('x-app', 'express-dynamic-router-creator');
+          next();
+        }
+      ],
+      routes: [
+        {
+          url: 'users',
+          routes: [
+            {
+              action: (req, res) => {
+                res.send('user list');
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
+```
+
+| Param           | Description                                                                                                                                                                                                 |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **app**         | Send the express app parameter. **Required**                                                                                                                                                                |
+| **routers**     | Routers are defined here. Must be array. **Optional**                                                                                                                                                       |
+| **port**        | Send the express port parameter. *if the port is set you don't need to do `listen`*. **Optional**                                                                                                           |
+| **folders**     | The folder definitions required for the project are given here. **routers**, **controllers** and **middlewares** parameters can be sent. Must be object. **Required but, optional if *routers* is defined** |
+| **routerFiles** | Route files are defined here. Must be array. **Required but, optional if *routers* is defined**                                                                                                             |
+| **info**        | This parameter is sent to the console to print information. Must be boolean. Default value `true`. **Optional**                                                                                             |
 
 ### **Route File Params**
 

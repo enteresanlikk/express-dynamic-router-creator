@@ -14,6 +14,8 @@ module.exports = {
   router_file_not_found: 'Router File Not Found',
 
   app_is_required: 'app is required',
+  routers_is_required: 'routers is required',
+  routers_is_empty: 'routers is empty',
   folders_is_required: 'folders is required',
   routerFiles_is_required: 'routerFiles is required',
   folders_routers_is_required: 'folders.routers is required',

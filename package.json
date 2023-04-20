@@ -1,6 +1,6 @@
 {
   "name": "express-dynamic-router-creator",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "With this module you will be able to write dynamic created routing with express.",
   "main": "index.js",
   "repository": {
@@ -14,7 +14,8 @@
     "routing",
     "dynamic",
     "dynamic routing",
-    "dynamic router creator"
+    "dynamic router creator",
+    "one file routing with express"
   ],
   "author": "Bilal Demir",
   "license": "ISC"
